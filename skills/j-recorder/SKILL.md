@@ -1,87 +1,116 @@
 # J-Recorder
 
-J-Recorder is a portable coding-agent skill for recording AI-assisted development workflows and turning successful work into reusable prompt engineering, engineering standards, and lessons learned.
+J-Recorder is a portable, agent-agnostic coding skill for recording AI-assisted development and turning the accumulated process into reusable prompt engineering, engineering standards, and lessons learned.
 
-## Purpose
+## Core Concept
 
-Record the development process instead of only the final code. A recorded workflow can later be transformed into:
+A **Workflow** is a long-lived development record. A Workflow contains multiple **Sessions**. A Session represents one continuous development period and normally corresponds to one working day or one resumed coding context.
 
-1. A complete one-shot project generation prompt.
-2. Engineering standards and conventions discovered during implementation.
-3. Lessons learned, failed approaches, root causes, and prevention rules.
-4. A reusable workflow that can be applied to another project or coding agent.
+The same workflow can be resumed on another day by using the exact same workflow name:
 
-The skill is designed to be agent-agnostic. The slash commands below are logical commands; an agent integration may expose them directly or map them to its own command/skill mechanism.
+```text
+/j-recorder-workflow my-project
+```
+
+If `my-project` already exists, never create a second workflow and never overwrite history. Load the existing workflow, inspect its latest state, create a new Session, and append new events.
+
+The source workflow is append-only. Generated prompts, standards, and lessons are derived artifacts.
 
 ## Commands
 
 ### `/j-recorder-workflow <workflow-name>`
 
-Start or continue recording a workflow.
+Start or resume a persistent workflow.
 
-- If the workflow does not exist, create it.
-- If it exists, append the current development event.
-- Never silently overwrite previous events.
-- Record meaningful AI actions, decisions, file changes, commands, test results, failures, fixes, and user corrections.
-- Do not record secrets, access tokens, passwords, private keys, or unrelated personal data.
+#### New workflow
 
-Recommended event format:
+If `.j-recorder/workflows/<workflow-name>.md` does not exist:
+
+1. Create the workflow file.
+2. Create Session 001.
+3. Record the current project context and initial intent.
+4. Continue recording the development process.
+
+#### Existing workflow
+
+If the workflow file already exists:
+
+1. Load the complete workflow history, or at minimum its latest session plus accumulated decisions, lessons, and current state.
+2. Determine the next session number from existing sessions.
+3. Create a new Session section; do not modify or delete previous sessions.
+4. Reconcile the previous recorded state with the current repository state.
+5. Record any differences between the previous state and current state.
+6. Continue appending development events to the new session.
+
+Example:
 
 ```text
-## Event: <timestamp or sequence>
+Day 1:
+/j-recorder-workflow my-project
 
-### Intent
-What the user/agent wanted to achieve.
+→ creates Session 001
 
-### Context
-Relevant project state, files, constraints, and assumptions.
+Day 2:
+/j-recorder-workflow my-project
 
-### Action
-What the agent actually did.
+→ finds my-project
+→ loads previous history
+→ creates Session 002
+→ continues recording
 
-### Artifacts
-Files created/changed, commands executed, APIs/models/tools used.
+Day 3:
+/j-recorder-workflow my-project
 
-### Result
-What happened, including tests and validation.
-
-### Problem
-What failed or was suboptimal.
-
-### Root Cause
-Why it happened.
-
-### Resolution
-How it was fixed.
-
-### Lesson
-What should be remembered next time.
+→ creates Session 003
 ```
+
+The user should never need to provide a new workflow name merely because development resumed on another day.
+
+#### Recording requirements
+
+Record meaningful:
+
+- user requirements and corrections;
+- architecture and implementation decisions;
+- files created, modified, or deleted;
+- commands executed;
+- dependencies and configuration changes;
+- tests and validation results;
+- failures and error messages when relevant;
+- root causes;
+- fixes and workarounds;
+- assumptions and unresolved questions;
+- reusable lessons.
+
+Never record secrets, tokens, passwords, private keys, or unrelated private information.
 
 ### `/j-show-workflow`
 
-List all recorded workflow names.
+List all workflows found under `.j-recorder/workflows/`.
 
-Return a concise table containing:
+Return:
 
-- workflow name
-- status
-- event count
-- created time
-- last updated time
+- workflow name;
+- status;
+- session count;
+- event count when available;
+- created date;
+- last updated date.
 
 ### `/j-generate-prompt`
 
-Generate a complete, self-contained prompt that can reproduce the recorded project from scratch.
+Generate a complete, self-contained prompt that another capable coding agent can use to reproduce the project from scratch.
 
-The generated prompt must be implementation-oriented rather than a summary. It should contain:
+The generated prompt must synthesize **all sessions** of the selected workflow. It must not simply summarize the latest session.
+
+Include:
 
 1. Role and execution rules for the coding agent.
 2. Project goal and functional requirements.
 3. Non-functional requirements.
-4. Technology stack and version constraints when known.
+4. Technology stack and version constraints.
 5. Architecture and module boundaries.
-6. Directory/file structure.
+6. Directory and file structure.
 7. Data models and interfaces.
 8. APIs, commands, integrations, and configuration.
 9. Detailed implementation steps in dependency order.
@@ -92,32 +121,58 @@ The generated prompt must be implementation-oriented rather than a summary. It s
 14. Lessons learned and known failure modes.
 15. Definition of done and acceptance criteria.
 
-The prompt must contain enough concrete information for another capable coding agent to implement the project without reading the original workflow.
+Resolve contradictions using the latest explicit user decision. Preserve late-discovered constraints. Convert failures into prevention instructions. Do not invent unknown details; label them as unknown or inferred.
+
+Save generated output to:
+
+```text
+.j-recorder/prompts/<workflow-name>.md
+```
 
 ### `/j-generate-standard`
 
-Analyze one or more workflows and extract reusable engineering knowledge.
+Analyze the selected workflow or all workflows and extract reusable engineering knowledge.
 
-Produce two separate sections:
+Produce two primary sections.
 
 #### Engineering Standards
-Stable rules that should become project/team conventions, such as naming, architecture, testing, dependency management, API design, logging, error handling, and file organization.
+
+Stable, actionable rules that should become project/team conventions.
+
+Examples:
+
+- architecture boundaries;
+- naming conventions;
+- testing rules;
+- dependency management;
+- API design;
+- logging;
+- error handling;
+- security;
+- file organization;
+- build and deployment practices.
 
 #### Lessons Learned
-Experience derived from actual problems. Each lesson should include:
+
+Knowledge derived from actual development problems. Each lesson should contain:
 
 - Situation
-- Failed/unsafe approach
+- Failed or unsafe approach
 - Root cause
 - Correct approach
 - Prevention rule
 - Scope/applicability
 
-Do not turn a one-off workaround into a universal standard unless there is evidence that it generalizes.
+Do not turn a one-off workaround into a universal standard without evidence that it generalizes.
+
+Save generated artifacts to:
+
+```text
+.j-recorder/standards/engineering-standards.md
+.j-recorder/lessons/lessons-learned.md
+```
 
 ## Storage Layout
-
-Use a human-readable Markdown/JSONL hybrid-friendly layout. The default layout is:
 
 ```text
 .j-recorder/
@@ -134,59 +189,174 @@ Use a human-readable Markdown/JSONL hybrid-friendly layout. The default layout i
 └── index.md
 ```
 
-`workflows/*.md` is the source of truth. Generated prompts and standards are derived artifacts and must never replace the original workflow record.
+`workflows/*.md` is the source of truth. Generated artifacts must never replace source history.
+
+## Workflow File Format
+
+Every workflow should use this structure:
+
+```text
+# Workflow: <workflow-name>
+
+## Metadata
+- Created: <date>
+- Last Updated: <date>
+- Status: active|completed|paused
+- Session Count: <number>
+
+## Current State
+- Goal: ...
+- Current implementation: ...
+- Known constraints: ...
+- Open issues: ...
+- Next recommended action: ...
+
+---
+
+# Session 001
+
+- Started: <timestamp>
+- Ended: <timestamp when known>
+
+## Context
+...
+
+## Events
+
+### Event 001
+#### Intent
+...
+#### Action
+...
+#### Artifacts
+...
+#### Result
+...
+#### Problem
+...
+#### Root Cause
+...
+#### Resolution
+...
+#### Lesson
+...
+
+---
+
+# Session 002
+...
+```
+
+The metadata and Current State may be updated as a controlled index of the workflow, but historical Session content and Events are append-only. When updating Current State, do not rewrite historical facts.
+
+## Session Rules
+
+A Session starts whenever `/j-recorder-workflow <workflow-name>` resumes an existing workflow in a new coding context.
+
+Do not create a new workflow merely because:
+
+- the calendar date changed;
+- the terminal was closed;
+- the coding agent restarted;
+- the user changed computers;
+- the project was paused and resumed.
+
+Always reuse the workflow name when the work belongs to the same project/workstream.
+
+Create a new workflow only when the user explicitly gives a different workflow name or clearly starts an independent project.
 
 ## Recording Rules
 
 - Prefer facts over interpretation.
-- Preserve the sequence of important decisions.
-- Record why a decision was made when that reason affects reproducibility.
+- Preserve important decision order.
+- Record why a decision was made when it affects reproducibility.
 - Record failed attempts, not only successful attempts.
 - Capture user corrections because they are high-value requirements.
-- Capture validation evidence such as test commands and results.
+- Capture validation evidence such as commands and results.
 - Distinguish requirements from implementation choices.
 - Mark uncertain assumptions explicitly.
-- Deduplicate repeated events during generation, but never delete source history.
-- Never invent missing implementation details. Mark them as unknown or inferred.
+- Deduplicate only during generation; never delete source history.
+- Never invent missing implementation details.
+
+## Resume Rules
+
+When resuming a workflow, the agent should first establish continuity:
+
+```text
+Existing Workflow
+      ↓
+Load latest Current State
+      ↓
+Load latest Session
+      ↓
+Inspect current repository state
+      ↓
+Compare recorded state with actual state
+      ↓
+Record state changes if relevant
+      ↓
+Create new Session
+      ↓
+Continue development
+```
+
+The agent should not blindly assume that the repository is exactly where the previous session ended. It should inspect the actual project state when that is practical.
 
 ## Prompt Generation Rules
 
 When generating a reproduction prompt:
 
-- Convert the workflow timeline into a deterministic implementation plan.
-- Resolve contradictions using the latest explicit user decision.
-- Preserve important constraints even if they were discovered late.
-- Promote repeated successful patterns into explicit rules.
-- Include failures as prevention instructions rather than reproducing the failures.
-- Include exact commands, file paths, interfaces, schemas, and configuration when available.
-- Separate mandatory requirements from recommendations.
-- Make the final prompt usable as a single pasted instruction to a coding agent.
+- synthesize all Sessions;
+- prioritize explicit user requirements;
+- use the latest explicit decision when requirements conflict;
+- preserve important constraints discovered late;
+- promote repeated successful patterns into rules;
+- convert failures into prevention instructions;
+- include exact commands, paths, interfaces, schemas, and configuration when known;
+- separate mandatory requirements from recommendations;
+- make the final result usable as one pasted prompt;
+- do not require the target agent to read the original workflow.
 
 ## Standard Extraction Rules
 
 A candidate standard should generally be:
 
-- repeated across multiple events or clearly required by the project;
+- repeated across events or clearly required by the project;
 - stable rather than tied to a temporary bug;
 - actionable and testable;
 - specific enough to guide an agent.
 
-A candidate lesson should generally have evidence of a problem, its cause, and a better approach. Assign a scope such as `project`, `stack`, `tool`, or `general`.
+A candidate lesson should have evidence of a problem, cause, and better approach. Assign a scope such as `project`, `stack`, `tool`, or `general`.
 
 ## Agent Behavior
 
-When this skill is active, the coding agent should:
+When active, the coding agent should:
 
-1. Inspect the existing workflow before making major changes when recording is enabled.
-2. Perform the requested coding work normally.
-3. Append a workflow event after meaningful milestones, failures, fixes, or user corrections.
-4. Keep source workflow history append-only.
-5. Run tests/validation appropriate to the change.
-6. Make generated prompt/standard artifacts reproducible from the source workflow.
-7. Avoid claiming that a lesson is proven when it is only an assumption.
+1. Determine whether the workflow exists.
+2. Create or resume the appropriate Workflow.
+3. Create a new Session when resuming an existing Workflow.
+4. Inspect relevant history before major changes.
+5. Perform coding work normally.
+6. Append events after meaningful milestones, failures, fixes, and user corrections.
+7. Keep source history append-only.
+8. Validate changes with appropriate tests.
+9. Update Current State without rewriting historical sessions.
+10. Make generated artifacts reproducible from source history.
+11. Never claim an inferred lesson is proven.
 
 ## Compatibility
 
-For agents that support native skills, load this `SKILL.md` as a skill.
-For agents that support slash commands, map the four commands to the command definitions in this document.
-For agents without either mechanism, the same behavior can be invoked by asking the agent to "activate J-Recorder" and specifying the desired command.
+For agents supporting native skills, load this `SKILL.md` as a skill.
+
+For agents supporting slash commands, map:
+
+```text
+/j-recorder-workflow <workflow-name>
+/j-show-workflow
+/j-generate-prompt
+/j-generate-standard
+```
+
+to the behaviors defined above.
+
+For agents without slash-command support, the same operations can be requested in natural language after activating J-Recorder.
