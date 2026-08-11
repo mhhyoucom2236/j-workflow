@@ -1,74 +1,76 @@
-# Cloud AI Note
+# J-Workflow
 
-> An open-source knowledge and workflow toolkit for AI-assisted software development.
+> Turn AI coding workflows into reusable prompts, engineering standards, and lessons learned.
 >
-> **Record the process. Extract the experience. Reuse the prompt. Rebuild the project.**
+> **Record the process. Extract the experience. Reuse the knowledge. Rebuild the project.**
 
-[![GitHub](https://img.shields.io/badge/GitHub-Open%20Source-181717?logo=github)](https://github.com/mhhyoucom2236/cloud-ai-note)
-[![Skill](https://img.shields.io/badge/AI%20Agent-Skill-blue)](skills/j-recorder/SKILL.md)
+[![GitHub](https://img.shields.io/badge/GitHub-Open%20Source-181717?logo=github)](https://github.com/mhhyoucom2236/j-workflow)
+[![AI Agent Skill](https://img.shields.io/badge/AI%20Agent-Skill-blue)](skills/j-recorder/SKILL.md)
 
 ## ✨ Overview
 
-**Cloud AI Note** is an open-source project focused on preserving the valuable knowledge produced during AI-assisted programming.
+**J-Workflow** is an open-source workflow knowledge system for AI-assisted software development.
 
-Most AI coding conversations are temporary: the agent solves a problem, the session ends, and the useful decisions, failed attempts, fixes, and lessons are lost.
+AI coding agents can write code quickly, but valuable development knowledge is often lost when a session ends: requirements, architectural decisions, failed attempts, debugging experience, user corrections, and successful solutions disappear with the conversation.
 
-Cloud AI Note introduces a persistent workflow recording mechanism that turns an AI coding session into reusable engineering knowledge.
+J-Workflow solves this by turning the development process into a **persistent, reusable workflow**.
 
 ```text
-AI Coding Session
-       │
-       ▼
-  Record Workflow
-       │
-       ▼
-   Persistent History
-       │
-       ├───────────────┐
-       ▼               ▼
-Generate Prompt   Extract Knowledge
-       │               │
-       ▼               ├── Engineering Standards
-Rebuild Project       └── Lessons Learned
+AI Coding
+   │
+   ▼
+Record Workflow
+   │
+   ▼
+Persistent Sessions
+   │
+   ├─────────────────────┐
+   ▼                     ▼
+Generate Prompt     Extract Knowledge
+   │                     │
+   ▼                     ├── Engineering Standards
+Rebuild Project          └── Lessons Learned
 ```
 
 ## 🚀 J-Recorder
 
-The first core capability of this project is **J-Recorder**, an agent-agnostic Skill for recording AI-assisted development workflows.
+**J-Recorder** is the first core Skill in J-Workflow.
 
-It is designed to work with modern coding agents that support Skills, slash commands, or equivalent instruction mechanisms.
+It records meaningful AI-assisted development events and preserves them across coding sessions and working days. The same workflow can be resumed at any time without losing previous history.
 
 ### Core commands
 
 | Command | Description |
 |---|---|
-| `/j-recorder-workflow <name>` | Create or resume a persistent development workflow |
+| `/j-recorder-workflow <name>` | Create or resume a persistent workflow |
 | `/j-show-workflow` | List all recorded workflows |
 | `/j-generate-prompt` | Generate a complete project-reproduction prompt |
 | `/j-generate-standard` | Extract engineering standards and lessons learned |
 
-### Persistent workflows
+## 🔄 Persistent Workflows
 
-A workflow is not limited to a single AI session or a single day.
+A **Workflow** represents one long-running development effort. A workflow contains multiple **Sessions**.
+
+Start a new workflow:
 
 ```text
 /j-recorder-workflow my-project
 ```
 
-First day:
+The first working session creates:
 
 ```text
 my-project
 └── Session 001
 ```
 
-Next day, run the same command:
+The next day, simply run the same command:
 
 ```text
 /j-recorder-workflow my-project
 ```
 
-The existing workflow is resumed instead of creating a new one:
+J-Recorder detects the existing workflow and continues it:
 
 ```text
 my-project
@@ -76,40 +78,94 @@ my-project
 └── Session 002
 ```
 
-The history is append-only. Previous development sessions are preserved.
+Continue again later:
 
-## 🧠 From Development History to Prompt Engineering
+```text
+my-project
+├── Session 001
+├── Session 002
+└── Session 003
+```
 
-J-Recorder does more than store a conversation.
+Previous sessions are preserved. The workflow history is append-only.
 
-It captures the information required to reproduce the development process:
+## 🧠 What Gets Recorded?
+
+J-Recorder focuses on information that helps another AI agent understand **how and why** a project was built.
+
+Typical records include:
 
 - User requirements and corrections
+- Project constraints
 - Architecture decisions
-- Implementation choices
-- File and directory changes
-- Commands and tooling
+- Implementation decisions
+- Files created, modified, or deleted
+- Commands and tools used
 - Dependencies and configuration
-- Tests and validation results
+- Test and validation results
 - Failed approaches
-- Root causes
+- Error causes
 - Fixes and workarounds
-- Engineering constraints
+- Important assumptions
 - Reusable lessons
 
-The accumulated workflow can then be transformed into a **self-contained project-generation prompt**.
+Secrets such as passwords, API keys, access tokens, and private keys should never be recorded.
 
-The generated prompt is intended to contain enough information for another capable coding agent to build the project without reading the original workflow.
+## 🧩 From Workflow to Prompt Engineering
+
+The recorded workflow can be transformed into a **self-contained project-generation prompt**.
+
+```text
+Development History
+        │
+        ▼
+Requirements + Decisions
+        │
+        ▼
+Architecture + Implementation
+        │
+        ▼
+Failures + Solutions
+        │
+        ▼
+Standards + Lessons
+        │
+        ▼
+Complete Generation Prompt
+```
+
+`/j-generate-prompt` synthesizes the accumulated workflow instead of merely summarizing the latest conversation.
+
+The generated prompt is designed to contain enough concrete information for another capable coding agent to reproduce the project without reading the original workflow.
+
+It can include:
+
+- Project goals
+- Functional requirements
+- Non-functional requirements
+- Technology stack
+- Architecture
+- Directory and file structure
+- APIs and interfaces
+- Data models
+- Configuration
+- Implementation steps
+- Testing requirements
+- Error handling
+- Security constraints
+- Engineering standards
+- Known failure modes
+- Acceptance criteria
 
 ## 📚 Engineering Standards & Lessons Learned
 
-Development history contains knowledge that is useful beyond one project.
+Development history contains reusable engineering knowledge.
 
-`/j-generate-standard` extracts two categories:
+`/j-generate-standard` extracts two categories of knowledge.
 
 ### Engineering Standards
 
-Stable and actionable development rules, such as:
+Stable and actionable rules that can guide future development:
 
 - Architecture boundaries
 - Naming conventions
@@ -124,26 +180,26 @@ Stable and actionable development rules, such as:
 
 ### Lessons Learned
 
-Experience derived from actual problems:
+Lessons are derived from actual development problems rather than guesses.
 
 ```text
 Situation
-   ↓
+    ↓
 Failed Approach
-   ↓
+    ↓
 Root Cause
-   ↓
+    ↓
 Correct Approach
-   ↓
+    ↓
 Prevention Rule
 ```
 
-This makes the project's development history progressively more useful instead of becoming a static archive.
+This allows each development project to become a source of knowledge for future AI coding tasks.
 
 ## 📁 Project Structure
 
 ```text
-cloud-ai-note/
+j-workflow/
 ├── skills/
 │   └── j-recorder/
 │       └── SKILL.md
@@ -160,28 +216,28 @@ cloud-ai-note/
     └── index.md
 ```
 
-The workflow history is the source of truth. Generated prompts, standards, and lessons are derived artifacts.
+The workflow history is the **source of truth**. Prompts, standards, and lessons are derived artifacts.
 
 ## 🔧 Installation
 
-J-Recorder is currently distributed as a Skill rather than a traditional application package.
+J-Workflow is currently distributed as an AI Agent Skill.
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/mhhyoucom2236/cloud-ai-note.git
-cd cloud-ai-note
+git clone https://github.com/mhhyoucom2236/j-workflow.git
+cd j-workflow
 ```
 
-Then load the Skill according to the Skill mechanism supported by your coding agent:
+Load the Skill using the Skill mechanism supported by your coding agent:
 
 ```text
 skills/j-recorder/SKILL.md
 ```
 
-> Agent-specific installation instructions will be added as compatibility integrations are introduced.
+> Agent-specific installation and integration guides will be added as compatibility support expands.
 
-## 💡 Example Workflow
+## 💡 Example
 
 Imagine you are developing an Android application with an AI coding agent.
 
@@ -193,105 +249,118 @@ Imagine you are developing an Android application with an AI coding agent.
 
 ### 2. Develop normally
 
-The agent records meaningful events such as:
+The agent records meaningful events:
 
 ```text
 Requirement
-→ Architecture decision
-→ Code change
-→ Build failure
-→ Root-cause analysis
-→ Fix
-→ Test
-→ User correction
+    ↓
+Architecture Decision
+    ↓
+Code Change
+    ↓
+Build Failure
+    ↓
+Root Cause
+    ↓
+Fix
+    ↓
+Test
+    ↓
+User Correction
 ```
 
 ### 3. Continue tomorrow
+
+Run the same workflow command:
 
 ```text
 /j-recorder-workflow android-app
 ```
 
-The agent resumes the existing workflow and starts the next Session.
+The existing workflow is resumed and a new Session is appended.
 
-### 4. Generate a reproduction prompt
+### 4. Generate a project prompt
 
 ```text
 /j-generate-prompt
 ```
 
-The complete development history is transformed into a reusable project-generation prompt.
+The complete workflow history is transformed into a reusable project-generation prompt.
 
-### 5. Extract engineering knowledge
+### 5. Extract knowledge
 
 ```text
 /j-generate-standard
 ```
 
-The workflow is analyzed to extract reusable standards and lessons learned.
+Engineering standards and lessons learned are extracted from the recorded development experience.
 
-## 🎯 Goals
+## 🎯 Project Goals
 
-Cloud AI Note aims to evolve toward a reusable knowledge layer for AI coding agents:
+J-Workflow aims to become a reusable knowledge layer for AI coding agents.
 
 ```text
-                 ┌─────────────────────┐
-                 │   AI Coding Agent   │
-                 └──────────┬──────────┘
-                            │
-                            ▼
-                 ┌─────────────────────┐
-                 │   J-Recorder Skill  │
-                 └──────────┬──────────┘
-                            │
-                            ▼
-                 ┌─────────────────────┐
-                 │ Persistent Workflow │
-                 └──────────┬──────────┘
-                            │
-              ┌─────────────┴─────────────┐
-              ▼                           ▼
-      ┌───────────────┐           ┌───────────────┐
-      │ Prompt Engine │           │  Knowledge    │
-      │   Generation  │           │  Extraction   │
-      └───────┬───────┘           └───────┬───────┘
-              │                           │
-              ▼                           ▼
-       Project Rebuild            Standards / Lessons
+                  ┌─────────────────────┐
+                  │   AI Coding Agent   │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │    J-Workflow       │
+                  │    J-Recorder       │
+                  └──────────┬──────────┘
+                             │
+               ┌─────────────┴─────────────┐
+               ▼                           ▼
+       ┌────────────────┐          ┌────────────────┐
+       │ Prompt Engine  │          │   Knowledge    │
+       │  Generation    │          │   Extraction   │
+       └───────┬────────┘          └───────┬────────┘
+               │                           │
+               ▼                           ▼
+        Project Rebuild             Standards / Lessons
 ```
 
 Long-term goals include:
 
-- Support for mainstream coding agents
-- Better workflow summarization and reconstruction
-- Automatic knowledge extraction
-- Cross-project engineering standards
+- Support for mainstream AI coding agents
+- Native Skill integrations
+- Automatic workflow recording
+- Better prompt reconstruction
+- Cross-project engineering knowledge
 - Reusable prompt libraries
-- More robust workflow indexing and search
+- Workflow search and indexing
+- Automatic lesson and standard propagation
 - Agent-specific integrations
 
 ## 🤝 Contributing
 
 Contributions are welcome.
 
-If you have ideas for improving workflow recording, prompt generation, knowledge extraction, or agent compatibility, feel free to open an Issue or Pull Request.
+If you have ideas for workflow recording, prompt generation, knowledge extraction, or AI agent compatibility, feel free to open an Issue or Pull Request.
 
-Before submitting a change, please keep the following principles in mind:
+Please keep these principles in mind:
 
 1. Preserve original workflow history.
 2. Prefer deterministic and reproducible behavior.
 3. Record facts instead of inventing information.
 4. Treat failed approaches as valuable engineering evidence.
-5. Keep generated artifacts derived from source workflow history.
+5. Keep generated artifacts derived from workflow history.
+6. Avoid recording secrets or private credentials.
 
 ## 📄 License
 
 License information will be added as the project matures.
 
-## ⭐ Why Cloud AI Note?
+## ⭐ Why J-Workflow?
 
-AI coding agents are becoming increasingly capable, but the development knowledge generated during a project is still easy to lose.
+AI coding agents are becoming increasingly capable. The next problem is not only **how to generate code**, but also **how to preserve and reuse the knowledge created while generating it**.
 
-Cloud AI Note treats that knowledge as a reusable engineering asset:
+J-Workflow treats AI-assisted development history as a reusable engineering asset.
 
 > **Don't let a successful AI coding session disappear when the session ends. Record it, learn from it, and make it reusable.**
+
+## 🔗 Links
+
+- Repository: https://github.com/mhhyoucom2236/j-workflow
+- J-Recorder Skill: [skills/j-recorder/SKILL.md](skills/j-recorder/SKILL.md)
