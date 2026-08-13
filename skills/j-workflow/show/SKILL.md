@@ -1,3 +1,8 @@
+---
+name: j-workflow-show
+description: Inspect J-Workflow history and list recorded workflows with status and session information. Use when the user explicitly asks to show or inspect J-Workflow workflows, for example /j-workflow:show.
+---
+
 # J-Workflow Show
 
 Use this skill only when the user explicitly invokes:
