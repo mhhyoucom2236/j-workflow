@@ -1,6 +1,11 @@
+---
+name: j-workflow-recorder
+description: Start or resume J-Workflow recording for a named development workflow. Use when the user explicitly asks to record or resume a coding workflow, for example /j-workflow:recorder <workflow-name>.
+---
+
 # J-Workflow Recorder
 
-Use this skill only when the user explicitly invokes:
+Use this skill only when the user explicitly invokes the recorder operation:
 
 ```text
 /j-workflow:recorder <workflow-name>
