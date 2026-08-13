@@ -1,3 +1,8 @@
+---
+name: j-workflow-standard
+description: Extract reusable engineering standards and lessons learned from J-Workflow history. Use when the user explicitly asks to generate or update standards and lessons, for example /j-workflow:standard [workflow-name].
+---
+
 # J-Workflow Standard
 
 Use this skill only when the user explicitly invokes:
@@ -8,51 +13,39 @@ Use this skill only when the user explicitly invokes:
 
 ## Purpose
 
-Extract reusable engineering knowledge from one selected workflow or, when no workflow name is supplied, from all workflows.
+Extract reusable engineering knowledge from a selected Workflow or from all available Workflow histories.
 
 ## Procedure
 
-1. Select the requested workflow, or all workflows when no name is supplied.
-2. Analyze development events, decisions, failures, fixes, and repeated patterns.
-3. Separate stable engineering standards from evidence-based lessons.
-4. Do not turn a one-off workaround into a universal standard without evidence that it generalizes.
-5. Save the generated artifacts to:
-
-```text
-.j-recorder/standards/engineering-standards.md
-.j-recorder/lessons/lessons-learned.md
-```
+1. Select the specified Workflow, or inspect all workflows when no name is provided.
+2. Read relevant Sessions and Events.
+3. Separate evidence-backed reusable rules from one-off workarounds.
+4. Generate or update:
+   - `.j-recorder/standards/engineering-standards.md`
+   - `.j-recorder/lessons/lessons-learned.md`
+5. Keep Workflow history as the source of truth.
+6. Never include secrets or private credentials.
 
 ## Engineering Standards
 
-Extract stable, actionable rules such as:
+Extract stable, actionable rules for areas such as architecture, naming, testing, dependency management, API design, logging, error handling, security, project structure, and build/deployment.
 
-- architecture boundaries;
-- naming conventions;
-- testing rules;
-- dependency management;
-- API design;
-- logging;
-- error handling;
-- security;
-- file organization;
-- build and deployment practices.
-
-A candidate standard should generally be repeated, clearly required, stable, actionable, and testable.
+Do not promote a rule to a general standard unless the recorded evidence supports it.
 
 ## Lessons Learned
 
-Each lesson should contain:
+For each meaningful lesson, prefer:
 
-- Situation
-- Failed or unsafe approach
-- Root cause
-- Correct approach
-- Prevention rule
-- Scope/applicability (`project`, `stack`, `tool`, or `general`)
+```text
+Situation
+↓
+Failed Approach
+↓
+Root Cause
+↓
+Correct Approach
+↓
+Prevention Rule
+```
 
-A candidate lesson must have evidence of a problem, cause, and better approach.
-
-## Source Integrity
-
-Treat `.j-recorder/workflows/*.md` as the source of truth. Generated standards and lessons are derived artifacts and must never rewrite or delete workflow history.
+Lessons should be traceable to recorded development evidence whenever practical.
