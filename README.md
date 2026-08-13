@@ -17,6 +17,52 @@ AI coding agents can write code quickly, but valuable development knowledge is o
 
 J-Workflow turns that development process into a **persistent, reusable workflow**. It is explicitly activated by a user command, so it does not interfere with normal coding unless you ask it to.
 
+## ⚡ One-Shot Agent Deployment
+
+The easiest way to install J-Workflow is to give the following prompt to your coding agent. The agent should inspect its own environment, determine how it manages Agent Skills, and install J-Workflow using the appropriate mechanism instead of assuming a specific vendor or directory layout.
+
+> **Copy the entire prompt below and paste it into your AI coding agent.**
+
+```text
+Install and configure J-Workflow in the current AI coding agent environment.
+
+Repository:
+https://github.com/mhhyoucom2236/j-workflow
+
+Requirements:
+
+1. Inspect the current project and the coding agent environment first.
+2. Determine which Agent Skills mechanism this agent supports (for example, a skills directory, project-local skills, user/global skills, or another documented mechanism).
+3. Clone or otherwise obtain the J-Workflow repository from the URL above.
+4. Install/load the J-Workflow skill family using the host agent's standard Skill installation mechanism. Do not invent a vendor-specific installation path if the host provides documented conventions.
+5. Make sure these skills are available:
+   - j-workflow
+   - j-workflow-recorder
+   - j-workflow-show
+   - j-workflow-prompt
+   - j-workflow-standard
+   - j-workflow-stop
+6. Read the root skill at skills/j-workflow/SKILL.md and the required subcommand SKILL.md files before finishing installation.
+7. If the host supports namespaced slash commands, expose these operations using the host's supported command mechanism:
+   /j-workflow:recorder <workflow-name>
+   /j-workflow:show
+   /j-workflow:prompt <workflow-name>
+   /j-workflow:standard [workflow-name]
+   /j-workflow:stop
+8. If the host does not support colon-style namespaced commands, use the closest supported command/skill naming convention. Do not modify J-Workflow's behavior just to emulate an unsupported command syntax.
+9. Verify that the installed Skill files are readable and that the commands/skills can be discovered by the agent.
+10. Do not modify the user's application source code or project files except where required by the host's Skill installation mechanism.
+11. Do not record, copy, or expose passwords, API keys, access tokens, private keys, or other secrets.
+
+After installation, report:
+- Where J-Workflow was installed.
+- Which command/skill names are actually available in this agent.
+- Whether the requested /j-workflow:* syntax is supported natively or mapped to another host-specific form.
+- A minimal example showing how to start recording with a workflow named "my-project".
+```
+
+This deployment prompt is intentionally **agent-aware**: it asks the coding agent to detect its own Skill system instead of assuming that Codex, Claude Code, OpenCode, Cursor, or another host uses the same installation path.
+
 ## 🚀 Command-Oriented Skill
 
 J-Workflow uses a namespaced command concept similar to OpenSpec-style AI workflows:
@@ -46,7 +92,7 @@ Therefore, the exact command shown by an AI coding agent may differ:
 
 The repository provides standard `SKILL.md` metadata for the root skill and every subcommand skill. This makes the **skill content portable**, while command registration remains host-specific.
 
-This distinction is intentional: J-Workflow does not pretend that one slash-command syntax works identically in every coding agent. OpenSpec documents the same cross-tool difference: some hosts expose `/opsx:...`, while others use dash-style commands or named skills. citeturn0search0
+This distinction is intentional: J-Workflow does not pretend that one slash-command syntax works identically in every coding agent.
 
 ## 🔄 Persistent Workflows
 
@@ -196,6 +242,12 @@ The workflow history is the **source of truth**. Prompts, standards, and lessons
 ## 🔧 Installation
 
 J-Workflow is distributed as an AI Agent Skill.
+
+### Recommended: use the deployment prompt
+
+For most users, copy the prompt from [One-Shot Agent Deployment](#-one-shot-agent-deployment) into your coding agent. The agent can then inspect the host environment and perform the appropriate installation.
+
+### Manual installation
 
 Clone the repository:
 
