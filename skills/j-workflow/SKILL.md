@@ -1,10 +1,15 @@
+---
+name: j-workflow
+description: Command-oriented workflow knowledge system for AI coding agents. Use only when the user explicitly invokes a J-Workflow operation such as recorder, show, prompt, standard, or stop. It records development workflows and turns history into reusable prompts, engineering standards, and lessons learned.
+---
+
 # J-Workflow
 
 J-Workflow is a command-oriented AI coding skill for recording development workflows and turning accumulated history into reusable prompts, engineering standards, and lessons learned.
 
 ## Command Namespace
 
-J-Workflow is designed to be invoked through namespaced skill commands:
+J-Workflow is designed to expose these user-facing operations:
 
 ```text
 /j-workflow:recorder <workflow-name>
@@ -14,7 +19,7 @@ J-Workflow is designed to be invoked through namespaced skill commands:
 /j-workflow:stop
 ```
 
-The `j-workflow` namespace selects the J-Workflow skill family. Each subcommand loads the behavior defined by its corresponding skill.
+The `j-workflow` namespace identifies the skill family. The exact slash-command syntax is provided by the host agent; the behavior is defined by the corresponding subcommand skill in this repository.
 
 ## Commands
 
@@ -24,13 +29,13 @@ The `j-workflow` namespace selects the J-Workflow skill family. Each subcommand 
 | `/j-workflow:show` | List recorded workflows and their status |
 | `/j-workflow:prompt <workflow-name>` | Generate a self-contained project reproduction prompt from the workflow history |
 | `/j-workflow:standard [workflow-name]` | Extract engineering standards and lessons learned |
-| `/j-workflow:stop` | Stop recording the current workflow without deleting or changing its historical records |
+| `/j-workflow:stop` | Stop recording the current workflow without deleting or changing historical records |
 
 ## Skill Selection Rule
 
-The user explicitly invokes a subcommand. Do not automatically activate J-Workflow merely because a coding task is being performed.
+The user explicitly invokes a J-Workflow operation. Do not automatically activate J-Workflow merely because a coding task is being performed.
 
-When a J-Workflow command is invoked:
+When a J-Workflow operation is invoked:
 
 1. Load the corresponding subcommand skill.
 2. Follow that skill's procedure.
@@ -58,18 +63,10 @@ Stopping recording does not delete the Workflow, Session, or Events. Historical 
 
 ## Compatibility
 
-For agents with native skill support, load this directory as the J-Workflow skill family.
+This repository uses the portable Agent Skills `SKILL.md` format. Hosts that discover Agent Skills can load the individual subcommand skills directly.
 
-For agents supporting namespaced slash commands, map:
+The `/j-workflow:...` form is a user-facing namespace convention, not a feature guaranteed by the SKILL.md format itself. Hosts differ in how they expose skills as slash commands. A host may expose the commands as `/j-workflow:recorder`, `/j-workflow-recorder`, a named skill, or another equivalent form.
 
-```text
-/j-workflow:recorder
-/j-workflow:show
-/j-workflow:prompt
-/j-workflow:standard
-/j-workflow:stop
-```
+For hosts with native namespaced commands, map each command to the corresponding subcommand skill under this directory.
 
-to the corresponding subcommand skills under this directory.
-
-For agents that do not support namespaced commands, invoke the corresponding subcommand skill directly.
+For hosts without namespaced commands, invoke the corresponding subcommand skill directly or use the host-specific command/skill adapter.
