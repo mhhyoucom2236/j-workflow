@@ -43,6 +43,7 @@ J-Workflow uses a namespaced command style similar to command-oriented AI develo
 | `/j-workflow:show` | List all recorded workflows |
 | `/j-workflow:prompt <name>` | Generate a complete project-reproduction prompt |
 | `/j-workflow:standard [name]` | Extract engineering standards and lessons learned |
+| `/j-workflow:stop` | Stop recording for the current coding context without deleting history |
 
 The namespace is intentional: `j-workflow` identifies the skill family, while the suffix selects a specific operation.
 
@@ -81,6 +82,24 @@ my-project
 ```
 
 Previous sessions are preserved. Workflow history is append-only.
+
+### Stop Recording
+
+When you temporarily do not want development activity to be recorded, use:
+
+```text
+/j-workflow:stop
+```
+
+This stops recording for the current coding context. It **does not delete, rewrite, complete, or archive** the Workflow or its historical Sessions and Events.
+
+To resume recording later:
+
+```text
+/j-workflow:recorder my-project
+```
+
+`stop` means **stop recording**, not **complete the Workflow**.
 
 ## 🧠 What Gets Recorded?
 
@@ -181,7 +200,9 @@ j-workflow/
 │       │   └── SKILL.md
 │       ├── prompt/
 │       │   └── SKILL.md
-│       └── standard/
+│       ├── standard/
+│       │   └── SKILL.md
+│       └── stop/
 │           └── SKILL.md
 │
 └── .j-recorder/
@@ -222,6 +243,7 @@ For agents supporting namespaced slash commands, map the commands to the corresp
 /j-workflow:show      → skills/j-workflow/show/SKILL.md
 /j-workflow:prompt    → skills/j-workflow/prompt/SKILL.md
 /j-workflow:standard  → skills/j-workflow/standard/SKILL.md
+/j-workflow:stop      → skills/j-workflow/stop/SKILL.md
 ```
 
 > Exact slash-command discovery depends on the host agent. J-Workflow defines the command namespace and the behavior; the host agent is responsible for exposing the slash-command syntax.
@@ -258,7 +280,15 @@ Test
 User Correction
 ```
 
-### 3. Continue tomorrow
+### 3. Temporarily stop recording
+
+```text
+/j-workflow:stop
+```
+
+The agent continues normal coding, but J-Workflow does not append development events until recording is explicitly resumed.
+
+### 4. Resume recording
 
 ```text
 /j-workflow:recorder android-app
@@ -266,19 +296,19 @@ User Correction
 
 The existing workflow is resumed and a new Session is appended.
 
-### 4. Inspect workflows
+### 5. Inspect workflows
 
 ```text
 /j-workflow:show
 ```
 
-### 5. Generate a project prompt
+### 6. Generate a project prompt
 
 ```text
 /j-workflow:prompt android-app
 ```
 
-### 6. Extract knowledge
+### 7. Extract knowledge
 
 ```text
 /j-workflow:standard android-app
@@ -287,11 +317,12 @@ The existing workflow is resumed and a new Session is appended.
 ## 🎯 Design Principles
 
 1. **Explicit activation** — J-Workflow is invoked by a namespaced command rather than silently changing normal agent behavior.
-2. **Append-only history** — historical Sessions and Events are preserved.
-3. **Source/derived separation** — workflow history is authoritative; generated artifacts are reproducible outputs.
-4. **Facts over guesses** — unknown details remain unknown or explicitly inferred.
-5. **Failures are knowledge** — failed approaches, root causes, and fixes are valuable development evidence.
-6. **Secrets stay out** — credentials and private keys must never enter workflow history.
+2. **Explicit recording control** — recording can be stopped temporarily with `/j-workflow:stop` and resumed with the recorder command.
+3. **Append-only history** — historical Sessions and Events are preserved.
+4. **Source/derived separation** — workflow history is authoritative; generated artifacts are reproducible outputs.
+5. **Facts over guesses** — unknown details remain unknown or explicitly inferred.
+6. **Failures are knowledge** — failed approaches, root causes, and fixes are valuable development evidence.
+7. **Secrets stay out** — credentials and private keys must never enter workflow history.
 
 ## 🎯 Project Goals
 
@@ -333,3 +364,4 @@ J-Workflow treats AI-assisted development history as a reusable engineering asse
 - Repository: https://github.com/mhhyoucom2236/j-workflow
 - J-Workflow Skill: [skills/j-workflow/SKILL.md](skills/j-workflow/SKILL.md)
 - Recorder Skill: [skills/j-workflow/recorder/SKILL.md](skills/j-workflow/recorder/SKILL.md)
+- Stop Skill: [skills/j-workflow/stop/SKILL.md](skills/j-workflow/stop/SKILL.md)
