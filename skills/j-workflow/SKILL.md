@@ -11,6 +11,7 @@ J-Workflow is designed to be invoked through namespaced skill commands:
 /j-workflow:show
 /j-workflow:prompt <workflow-name>
 /j-workflow:standard [workflow-name]
+/j-workflow:stop
 ```
 
 The `j-workflow` namespace selects the J-Workflow skill family. Each subcommand loads the behavior defined by its corresponding skill.
@@ -23,6 +24,7 @@ The `j-workflow` namespace selects the J-Workflow skill family. Each subcommand 
 | `/j-workflow:show` | List recorded workflows and their status |
 | `/j-workflow:prompt <workflow-name>` | Generate a self-contained project reproduction prompt from the workflow history |
 | `/j-workflow:standard [workflow-name]` | Extract engineering standards and lessons learned |
+| `/j-workflow:stop` | Stop recording the current workflow without deleting or changing its historical records |
 
 ## Skill Selection Rule
 
@@ -34,6 +36,12 @@ When a J-Workflow command is invoked:
 2. Follow that skill's procedure.
 3. Use `.j-recorder/` as the workflow storage location.
 4. Never expose or record secrets such as passwords, tokens, API keys, or private keys.
+
+## Recording State
+
+Recording is active only after `/j-workflow:recorder <workflow-name>` has been explicitly invoked. `/j-workflow:stop` disables recording for the current coding context.
+
+Stopping recording does not delete the Workflow, Session, or Events. Historical records remain append-only. To resume recording, explicitly invoke `/j-workflow:recorder <workflow-name>` again.
 
 ## Storage
 
@@ -59,6 +67,7 @@ For agents supporting namespaced slash commands, map:
 /j-workflow:show
 /j-workflow:prompt
 /j-workflow:standard
+/j-workflow:stop
 ```
 
 to the corresponding subcommand skills under this directory.
