@@ -1,3 +1,8 @@
+---
+name: j-workflow-stop
+description: Stop J-Workflow recording for the current coding context without deleting or modifying historical workflow data. Use when the user explicitly asks to stop recording, for example /j-workflow:stop.
+---
+
 # J-Workflow Stop
 
 Use this skill only when the user explicitly invokes:
