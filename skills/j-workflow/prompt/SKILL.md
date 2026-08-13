@@ -1,3 +1,8 @@
+---
+name: j-workflow-prompt
+description: Generate a self-contained project reproduction prompt from J-Workflow history. Use when the user explicitly asks to generate a prompt from a workflow, for example /j-workflow:prompt <workflow-name>.
+---
+
 # J-Workflow Prompt
 
 Use this skill only when the user explicitly invokes:
@@ -8,38 +13,33 @@ Use this skill only when the user explicitly invokes:
 
 ## Purpose
 
-Generate a complete, self-contained prompt that another capable coding agent can use to reproduce the selected project from scratch.
+Transform the accumulated Workflow history into a self-contained prompt that another AI coding agent can use to understand and reproduce the project or continue development.
 
 ## Procedure
 
-1. Load the selected workflow's complete history, or all relevant Sessions when the history is large.
-2. Synthesize requirements, decisions, implementation details, failures, fixes, standards, and lessons.
-3. Prefer the latest explicit user decision when requirements conflict.
-4. Preserve constraints discovered late in development.
-5. Convert important failures into prevention instructions.
-6. Never invent unknown implementation details; label them as unknown or inferred.
-7. Save the result to:
+1. Read the selected Workflow from `.j-recorder/workflows/`.
+2. Read relevant Sessions and Events.
+3. Preserve facts, constraints, decisions, failures, fixes, and unresolved issues.
+4. Avoid inventing missing project details.
+5. Generate or update `.j-recorder/prompts/<workflow-name>.md`.
+6. Keep the generated prompt derived from Workflow history; do not treat it as the source of truth.
 
-```text
-.j-recorder/prompts/<workflow-name>.md
-```
+## Prompt Content
 
-## Required Prompt Content
+When supported by the recorded evidence, include:
 
-1. Role and execution rules.
-2. Project goal and functional requirements.
-3. Non-functional requirements.
-4. Technology stack and version constraints.
-5. Architecture and module boundaries.
-6. Directory and file structure.
-7. Data models and interfaces.
-8. APIs, commands, integrations, and configuration.
-9. Implementation steps in dependency order.
-10. Testing and validation requirements.
-11. Error handling and edge cases.
-12. Security constraints and forbidden practices.
-13. Engineering standards extracted from the workflow.
-14. Lessons learned and known failure modes.
-15. Definition of done and acceptance criteria.
+- project goal;
+- functional and non-functional requirements;
+- technology stack and version constraints;
+- architecture and directory structure;
+- APIs, interfaces, and data models;
+- configuration;
+- implementation sequence and dependencies;
+- tests and validation;
+- error handling and edge cases;
+- security constraints;
+- engineering standards;
+- known failure modes and lessons;
+- acceptance criteria.
 
-The generated prompt must be usable as one pasted prompt without requiring the target agent to read the original workflow.
+Never include secrets or private credentials.
