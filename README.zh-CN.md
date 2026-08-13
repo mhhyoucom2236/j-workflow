@@ -19,19 +19,57 @@ J-Workflow 的目标，就是把这些开发过程保存成**持久、可恢复�
 
 它采用显式命令激活，不会自动干扰普通 Coding。
 
+## ⚡ 一键让 Agent 安装
+
+最简单的安装方式，是把下面整段 Prompt 复制给你的 AI Coding Agent。Agent 会先检查自身环境和 Skill 机制，再使用适合当前 Agent 的安装方式，而不是假设某一个固定目录。
+
+> **复制下面整个 Prompt，直接粘贴给你的 AI Coding Agent。**
+
 ```text
-AI Coding Agent
-      │
-      ▼
-/j-workflow:<subcommand>
-      │
- ┌────┼──────────────┐
- ▼    ▼       ▼      ▼
-记录  查看    Prompt  规范
- │             │       │
- ▼             ▼       ├── 工程规范
-Workflow     Prompt    └── 经验教训
+请帮我在当前 AI Coding Agent 环境中安装并配置 J-Workflow。
+
+项目地址：
+https://github.com/mhhyoucom2236/j-workflow
+
+要求：
+
+1. 先检查当前项目以及当前 AI Coding Agent 的运行环境。
+2. 判断当前 Agent 支持哪一种 Agent Skills 机制，例如项目级 Skills、用户/全局 Skills、指定 skills 目录或其他官方支持的机制。
+3. 从上面的 GitHub 地址获取 J-Workflow 项目。
+4. 使用当前宿主 Agent 官方支持的 Skill 安装/加载方式安装 J-Workflow。不要在没有依据的情况下假设某个特定厂商的安装目录。
+5. 确保以下 Skill 都可用：
+   - j-workflow
+   - j-workflow-recorder
+   - j-workflow-show
+   - j-workflow-prompt
+   - j-workflow-standard
+   - j-workflow-stop
+6. 安装完成前，读取并理解：
+   - skills/j-workflow/SKILL.md
+   - skills/j-workflow/recorder/SKILL.md
+   - skills/j-workflow/show/SKILL.md
+   - skills/j-workflow/prompt/SKILL.md
+   - skills/j-workflow/standard/SKILL.md
+   - skills/j-workflow/stop/SKILL.md
+7. 如果当前 Agent 原生支持命名空间 Slash Command，则使用宿主 Agent 支持的方式提供：
+   /j-workflow:recorder <workflow-name>
+   /j-workflow:show
+   /j-workflow:prompt <workflow-name>
+   /j-workflow:standard [workflow-name]
+   /j-workflow:stop
+8. 如果当前 Agent 不支持冒号命名空间命令，则使用它实际支持的最接近的命令或 Skill 名称，不要为了模拟不支持的语法而修改 J-Workflow 的行为。
+9. 验证 Skill 文件可以被 Agent 正常读取，并确认 Skill/命令可以被发现或调用。
+10. 除非当前 Agent 的 Skill 安装机制明确要求，否则不要修改我的业务项目源码或项目文件。
+11. 不要记录、复制或泄露密码、API Key、Access Token、私钥或其他敏感信息。
+
+安装完成后告诉我：
+- J-Workflow 安装到了哪里。
+- 当前 Agent 实际可以使用哪些命令/Skill。
+- 是否原生支持 /j-workflow:*，如果不支持，实际使用的命令是什么。
+- 给出一个 workflow 名称为 "my-project" 的最小使用示例。
 ```
+
+这个 Prompt 特意设计成**Agent 自适应安装**：它会让 Agent 自己判断当前是 Codex、Claude Code、OpenCode、Cursor 或其他环境，而不是强行使用同一个安装路径。
 
 ## 🚀 命令式 Skill
 
@@ -161,22 +199,6 @@ J-Workflow 重点记录能够帮助另一个 AI Agent 理解**项目是如何以
 
 它不是简单总结最近一次对话，而是综合整个 Workflow 的历史。
 
-生成的 Prompt 可以包含：
-
-- 项目目标
-- 功能和非功能需求
-- 技术栈及版本约束
-- 架构和目录结构
-- API、接口和数据模型
-- 配置
-- 按依赖关系排序的实现步骤
-- 测试和验证要求
-- 错误处理和边界条件
-- 安全约束
-- 工程规范
-- 已知失败模式
-- 验收标准
-
 ## 📚 工程规范与经验教训
 
 执行：
@@ -189,18 +211,7 @@ J-Workflow 重点记录能够帮助另一个 AI Agent 理解**项目是如何以
 
 ### Engineering Standards
 
-提取稳定、可执行的工程规则，例如：
-
-- 架构边界
-- 命名规范
-- 测试规范
-- 依赖管理
-- API 设计
-- 日志规范
-- 错误处理
-- 安全规范
-- 项目结构
-- 构建和部署规范
+提取稳定、可执行的工程规则，例如架构边界、命名、测试、依赖管理、API 设计、日志、错误处理、安全、项目结构以及构建部署等。
 
 ### Lessons Learned
 
@@ -227,26 +238,17 @@ j-workflow/
 ├── skills/
 │   └── j-workflow/
 │       ├── SKILL.md
-│       ├── recorder/
-│       │   └── SKILL.md
-│       ├── show/
-│       │   └── SKILL.md
-│       ├── prompt/
-│       │   └── SKILL.md
-│       ├── standard/
-│       │   └── SKILL.md
-│       └── stop/
-│           └── SKILL.md
+│       ├── recorder/SKILL.md
+│       ├── show/SKILL.md
+│       ├── prompt/SKILL.md
+│       ├── standard/SKILL.md
+│       └── stop/SKILL.md
 │
 └── .j-recorder/
     ├── workflows/
-    │   └── <workflow-name>.md
     ├── prompts/
-    │   └── <workflow-name>.md
     ├── standards/
-    │   └── engineering-standards.md
     ├── lessons/
-    │   └── lessons-learned.md
     └── index.md
 ```
 
@@ -256,6 +258,12 @@ Workflow 历史是**唯一事实来源（Source of Truth）**，Prompt、Standar
 
 J-Workflow 以 AI Agent Skill 的形式提供。
 
+### 推荐：使用一键安装 Prompt
+
+大多数情况下，直接复制上面的[一键让 Agent 安装](#-一键让-agent-安装) Prompt 给你的 Coding Agent 即可。
+
+### 手动安装
+
 克隆项目：
 
 ```bash
@@ -263,10 +271,15 @@ git clone https://github.com/mhhyoucom2236/j-workflow.git
 cd j-workflow
 ```
 
-根据你的 Coding Agent 所支持的方式加载：
+根据你的 Coding Agent 所支持的方式加载对应的 `SKILL.md`：
 
 ```text
 skills/j-workflow/SKILL.md
+skills/j-workflow/recorder/SKILL.md
+skills/j-workflow/show/SKILL.md
+skills/j-workflow/prompt/SKILL.md
+skills/j-workflow/standard/SKILL.md
+skills/j-workflow/stop/SKILL.md
 ```
 
 如果宿主 Agent 支持命名空间 Slash Command，可以将命令映射到对应的子 Skill：
