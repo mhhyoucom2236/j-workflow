@@ -7,30 +7,28 @@
 [![GitHub](https://img.shields.io/badge/GitHub-Open%20Source-181717?logo=github)](https://github.com/mhhyoucom2236/j-workflow)
 [![AI Agent Skill](https://img.shields.io/badge/AI%20Agent-Skill-blue)](skills/j-workflow/SKILL.md)
 
+**English** | [中文](README.zh-CN.md)
+
 ## ✨ Overview
 
 **J-Workflow** is a command-oriented workflow knowledge system for AI-assisted software development.
 
 AI coding agents can write code quickly, but valuable development knowledge is often lost when a session ends: requirements, architectural decisions, failed attempts, debugging experience, user corrections, and successful solutions disappear with the conversation.
 
-J-Workflow turns that development process into a **persistent, reusable workflow**.
+J-Workflow turns that development process into a **persistent, reusable workflow**. It is explicitly activated by namespaced subcommands, so it does not interfere with normal coding unless you ask it to.
 
 ```text
 AI Coding Agent
       │
       ▼
-/j-workflow:recorder
+/j-workflow:<subcommand>
       │
-      ▼
-Persistent Workflow
-      │
- ┌────┴─────────────┐
- ▼                  ▼
-Prompt            Knowledge
-Generation        Extraction
- │                  │
- ▼                  ├── Standards
-Rebuild Project     └── Lessons
+ ┌────┼──────────────┐
+ ▼    ▼       ▼      ▼
+Record Show   Prompt Standard
+ │             │       │
+ ▼             ▼       ├── Standards
+Workflow     Prompt    └── Lessons
 ```
 
 ## 🚀 Namespaced Skill Commands
@@ -40,18 +38,20 @@ J-Workflow uses a namespaced command style similar to command-oriented AI develo
 | Command | Description |
 |---|---|
 | `/j-workflow:recorder <name>` | Create or resume a persistent workflow and record the current development session |
-| `/j-workflow:show` | List all recorded workflows |
-| `/j-workflow:prompt <name>` | Generate a complete project-reproduction prompt |
+| `/j-workflow:show` | List and inspect recorded workflows |
+| `/j-workflow:prompt <name>` | Generate a complete project-reproduction prompt from workflow history |
 | `/j-workflow:standard [name]` | Extract engineering standards and lessons learned |
-| `/j-workflow:stop` | Stop recording for the current coding context without deleting history |
+| `/j-workflow:stop` | Temporarily stop recording for the current coding context without deleting history |
 
 The namespace is intentional: `j-workflow` identifies the skill family, while the suffix selects a specific operation.
 
-J-Workflow is **not automatically activated for every coding task**. The user explicitly invokes a subcommand when the workflow capability is wanted.
+J-Workflow is **not automatically activated for every coding task**. The user explicitly invokes a subcommand when workflow recording or workflow knowledge operations are wanted.
+
+> **Host compatibility:** The exact slash-command discovery mechanism depends on the AI coding agent. J-Workflow defines the namespace and subcommand behavior; the host agent is responsible for exposing the commands.
 
 ## 🔄 Persistent Workflows
 
-A **Workflow** represents one long-running development effort. A workflow contains multiple **Sessions**.
+A **Workflow** represents one long-running development effort. A workflow contains multiple **Sessions**, and sessions contain meaningful development events.
 
 Start a new workflow:
 
@@ -246,11 +246,7 @@ For agents supporting namespaced slash commands, map the commands to the corresp
 /j-workflow:stop      → skills/j-workflow/stop/SKILL.md
 ```
 
-> Exact slash-command discovery depends on the host agent. J-Workflow defines the command namespace and the behavior; the host agent is responsible for exposing the slash-command syntax.
-
-## 💡 Example
-
-Imagine you are developing an Android application with an AI coding agent.
+## 💡 Quick Start
 
 ### 1. Start recording
 
@@ -279,6 +275,8 @@ Test
     ↓
 User Correction
 ```
+
+The recorder is focused on meaningful development knowledge rather than every trivial command or file operation.
 
 ### 3. Temporarily stop recording
 
@@ -365,3 +363,4 @@ J-Workflow treats AI-assisted development history as a reusable engineering asse
 - J-Workflow Skill: [skills/j-workflow/SKILL.md](skills/j-workflow/SKILL.md)
 - Recorder Skill: [skills/j-workflow/recorder/SKILL.md](skills/j-workflow/recorder/SKILL.md)
 - Stop Skill: [skills/j-workflow/stop/SKILL.md](skills/j-workflow/stop/SKILL.md)
+- [中文文档 / Chinese Documentation](README.zh-CN.md)
