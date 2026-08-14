@@ -1,8 +1,8 @@
 # J-Workflow
 
-> Turn AI coding workflows into reusable prompts, engineering standards, and lessons learned.
+> Turn AI coding workflows into reusable prompts, project architecture specifications, engineering standards, and lessons learned.
 >
-> **Record the process. Extract the experience. Reuse the knowledge. Rebuild the project.**
+> **Record the process. Understand the project. Reuse the knowledge. Build consistently.**
 
 [![GitHub](https://img.shields.io/badge/GitHub-Open%20Source-181717?logo=github)](https://github.com/mhhyoucom2236/j-workflow)
 [![AI Agent Skill](https://img.shields.io/badge/AI%20Agent-Skill-blue)](skills/j-workflow/SKILL.md)
@@ -15,7 +15,7 @@
 
 AI coding agents can write code quickly, but valuable development knowledge is often lost when a session ends: requirements, architectural decisions, failed attempts, debugging experience, user corrections, and successful solutions disappear with the conversation.
 
-J-Workflow turns that development process into a **persistent, reusable workflow**. It is explicitly activated by a user command, so it does not interfere with normal coding unless you ask it to.
+J-Workflow turns that development process into **persistent, reusable workflow knowledge**. It is explicitly activated by a user command, so it does not interfere with normal coding unless you ask it to.
 
 ## ⚡ One-Shot Agent Deployment
 
@@ -37,13 +37,15 @@ Requirements:
 4. Install/load the J-Workflow skill family using the host agent's standard Skill installation mechanism. Do not invent a vendor-specific installation path if the host provides documented conventions.
 5. Make sure these skills are available:
    - j-workflow
+   - j-workflow-init
    - j-workflow-recorder
    - j-workflow-show
    - j-workflow-prompt
    - j-workflow-standard
    - j-workflow-stop
-6. Read the root skill at skills/j-workflow/SKILL.md and the required subcommand SKILL.md files before finishing installation.
+6. Read the root skill and the required subcommand SKILL.md files before finishing installation.
 7. If the host supports namespaced slash commands, expose these operations using the host's supported command mechanism:
+   /j-workflow:init
    /j-workflow:recorder <workflow-name>
    /j-workflow:show
    /j-workflow:prompt <workflow-name>
@@ -69,6 +71,7 @@ J-Workflow uses a namespaced command concept similar to OpenSpec-style AI workfl
 
 | User-facing command | Description |
 |---|---|
+| `/j-workflow:init` | Analyze the current project and create a reusable project architecture/specification document |
 | `/j-workflow:recorder <name>` | Create or resume a persistent workflow and record the current development session |
 | `/j-workflow:show` | List and inspect recorded workflows |
 | `/j-workflow:prompt <name>` | Generate a complete project-reproduction prompt from workflow history |
@@ -77,22 +80,94 @@ J-Workflow uses a namespaced command concept similar to OpenSpec-style AI workfl
 
 J-Workflow is **not automatically activated for every coding task**. The user explicitly invokes a workflow operation when recording or workflow knowledge operations are wanted.
 
-### Important compatibility note
+## 🏗️ Project Architecture Initialization
 
-The `/j-workflow:...` syntax is a **user-facing namespace convention**. The portable Agent Skills format defines `SKILL.md` files and skill discovery, but it does not itself standardize a colon-style slash-command registry.
+`/j-workflow:init` is an **on-demand project analysis command**. Its purpose is different from `/j-workflow:standard`:
 
-Therefore, the exact command shown by an AI coding agent may differ:
+- `init` describes the **current project's architecture and implementation conventions**.
+- `standard` extracts **reusable engineering standards and lessons learned** from workflow history.
 
-| Agent / host style | Typical exposure |
-|---|---|
-| Hosts with namespaced slash commands | `/j-workflow:recorder` |
-| Hosts with flat slash commands | `/j-workflow-recorder` or an equivalent host-specific command |
-| Hosts exposing skills by name | `j-workflow-recorder` |
-| Hosts without custom command discovery | Explicitly invoke/load the corresponding `SKILL.md` |
+Run:
 
-The repository provides standard `SKILL.md` metadata for the root skill and every subcommand skill. This makes the **skill content portable**, while command registration remains host-specific.
+```text
+/j-workflow:init
+```
 
-This distinction is intentional: J-Workflow does not pretend that one slash-command syntax works identically in every coding agent.
+The agent analyzes the current project and attempts to understand:
+
+- Project and module structure
+- Architecture and layer boundaries
+- Module responsibilities and dependencies
+- Naming conventions
+- Package and file organization
+- Code style and implementation patterns
+- UI/state management patterns
+- Repository/data/network patterns
+- Dependency injection
+- Error handling and logging
+- Testing conventions
+- Build and deployment configuration
+- Existing project-specific conventions
+
+For technology-specific environments, the agent should inspect relevant versions and configuration. For example, an Android project may require checking:
+
+- JDK version
+- Gradle version
+- Android Gradle Plugin (AGP) version
+- Kotlin version
+- `compileSdk`
+- `targetSdk`
+- `minSdk`
+- Java/Kotlin language level
+- Build variants and product flavors
+- Dependency management
+
+### User confirmation for ambiguous decisions
+
+`init` must not silently invent architectural rules.
+
+If the project contains multiple patterns, incomplete configuration, or an important decision that cannot be determined reliably from the codebase, the agent should **ask the user for confirmation before finalizing the specification**.
+
+For example:
+
+```text
+The project contains both MVVM and MVI implementations.
+Which architecture should new modules use?
+
+A. MVVM
+B. MVI
+C. Keep both and choose based on module type
+```
+
+The same applies to environment standards such as JDK, Gradle, AGP, Kotlin, SDK versions, or other technology-specific conventions when the expected standard is unclear.
+
+### Generated project specification
+
+After analysis and required confirmations, `init` generates:
+
+```text
+.j-recorder/project-spec.md
+```
+
+This document records the project's current architecture, environment, conventions, coding style, module rules, and confirmed decisions so that the information can be explicitly reused in future coding tasks.
+
+The generated specification should distinguish between:
+
+- **Confirmed** — directly verified from the project or explicitly confirmed by the user
+- **Observed / Inferred** — strongly indicated by existing implementation but not explicitly confirmed
+- **Needs confirmation** — unresolved decisions that require the user
+
+### Important: `init` does not automatically enforce the specification
+
+`project-spec.md` is **not a global instruction automatically injected into every future coding task**.
+
+After initialization, the user decides when the specification should be used. For example:
+
+```text
+Read .j-recorder/project-spec.md and implement the new payment module according to the project's existing architecture and coding conventions.
+```
+
+This keeps J-Workflow non-invasive: running `init` creates project knowledge, but the user remains in control of when that knowledge becomes an instruction for the coding agent.
 
 ## 🔄 Persistent Workflows
 
@@ -223,6 +298,7 @@ j-workflow/
 ├── skills/
 │   └── j-workflow/
 │       ├── SKILL.md
+│       ├── init/SKILL.md
 │       ├── recorder/SKILL.md
 │       ├── show/SKILL.md
 │       ├── prompt/SKILL.md
@@ -234,10 +310,11 @@ j-workflow/
     ├── prompts/
     ├── standards/
     ├── lessons/
+    ├── project-spec.md
     └── index.md
 ```
 
-The workflow history is the **source of truth**. Prompts, standards, and lessons are derived artifacts.
+The workflow history is the **source of truth**. Prompts, standards, lessons, and project specifications are derived or confirmed artifacts.
 
 ## 🔧 Installation
 
@@ -260,6 +337,7 @@ For an Agent Skills-compatible host, load the appropriate `SKILL.md`. The root s
 
 ```text
 skills/j-workflow/SKILL.md
+skills/j-workflow/init/SKILL.md
 skills/j-workflow/recorder/SKILL.md
 skills/j-workflow/show/SKILL.md
 skills/j-workflow/prompt/SKILL.md
@@ -270,6 +348,7 @@ skills/j-workflow/stop/SKILL.md
 For a host that supports namespaced slash commands, register the user-facing operations against the corresponding subcommand skills:
 
 ```text
+/j-workflow:init      → skills/j-workflow/init/SKILL.md
 /j-workflow:recorder  → skills/j-workflow/recorder/SKILL.md
 /j-workflow:show      → skills/j-workflow/show/SKILL.md
 /j-workflow:prompt    → skills/j-workflow/prompt/SKILL.md
@@ -281,7 +360,23 @@ Do not assume that a host will automatically create the colon-style commands mer
 
 ## 💡 Quick Start
 
-### 1. Start recording
+### 1. Initialize the project specification
+
+If you want J-Workflow to understand an existing project's architecture and conventions first:
+
+```text
+/j-workflow:init
+```
+
+Review and answer any questions about ambiguous architecture or environment decisions. The result is saved to:
+
+```text
+.j-recorder/project-spec.md
+```
+
+The specification remains passive until you explicitly tell the coding agent to use it.
+
+### 2. Start recording
 
 ```text
 /j-workflow:recorder android-app
@@ -289,7 +384,7 @@ Do not assume that a host will automatically create the colon-style commands mer
 
 The agent creates or resumes the `android-app` workflow and begins recording meaningful events for the active coding context.
 
-### 2. Develop normally
+### 3. Develop normally
 
 ```text
 Requirement
@@ -311,7 +406,7 @@ User Correction
 
 The recorder focuses on meaningful development knowledge rather than every trivial command or file operation.
 
-### 3. Temporarily stop recording
+### 4. Temporarily stop recording
 
 ```text
 /j-workflow:stop
@@ -319,7 +414,7 @@ The recorder focuses on meaningful development knowledge rather than every trivi
 
 The agent continues normal coding, but J-Workflow does not append development events until recording is explicitly resumed.
 
-### 4. Resume recording
+### 5. Resume recording
 
 ```text
 /j-workflow:recorder android-app
@@ -327,19 +422,19 @@ The agent continues normal coding, but J-Workflow does not append development ev
 
 The existing workflow is resumed and a new Session is appended.
 
-### 5. Inspect workflows
+### 6. Inspect workflows
 
 ```text
 /j-workflow:show
 ```
 
-### 6. Generate a project prompt
+### 7. Generate a project prompt
 
 ```text
 /j-workflow:prompt android-app
 ```
 
-### 7. Extract knowledge
+### 8. Extract knowledge
 
 ```text
 /j-workflow:standard android-app
@@ -348,16 +443,18 @@ The existing workflow is resumed and a new Session is appended.
 ## 🎯 Design Principles
 
 1. **Explicit activation** — J-Workflow is invoked by a user command rather than silently changing normal agent behavior.
-2. **Explicit recording control** — recording can be stopped temporarily with `/j-workflow:stop` and resumed with the recorder command.
-3. **Append-only history** — historical Sessions and Events are preserved.
-4. **Source/derived separation** — workflow history is authoritative; generated artifacts are reproducible outputs.
-5. **Facts over guesses** — unknown details remain unknown or explicitly inferred.
-6. **Failures are knowledge** — failed approaches, root causes, and fixes are valuable development evidence.
-7. **Secrets stay out** — credentials and private keys must never enter workflow history.
+2. **Explicit project specification** — `/j-workflow:init` creates architecture knowledge without automatically enforcing it.
+3. **Explicit recording control** — recording can be stopped temporarily with `/j-workflow:stop` and resumed with the recorder command.
+4. **Append-only history** — historical Sessions and Events are preserved.
+5. **Source/derived separation** — workflow history is authoritative; generated artifacts are reproducible or confirmed outputs.
+6. **Facts over guesses** — unknown details remain unknown or explicitly inferred.
+7. **User confirmation for decisions** — important ambiguous architecture and environment choices are confirmed instead of guessed.
+8. **Failures are knowledge** — failed approaches, root causes, and fixes are valuable development evidence.
+9. **Secrets stay out** — credentials and private keys must never enter workflow history or generated specifications.
 
 ## 🤝 Contributing
 
-Contributions are welcome. Please preserve deterministic behavior, append-only source history, evidence-based knowledge, reproducibility, and secret protection.
+Contributions are welcome. Please preserve deterministic behavior, append-only source history, evidence-based knowledge, reproducibility, explicit activation, and secret protection.
 
 ## 📄 License
 
@@ -367,14 +464,15 @@ MIT License. See [LICENSE](LICENSE).
 
 AI coding agents are becoming increasingly capable. The next problem is not only **how to generate code**, but also **how to preserve and reuse the knowledge created while generating it**.
 
-J-Workflow treats AI-assisted development history as a reusable engineering asset.
+J-Workflow treats AI-assisted development history and project architecture knowledge as reusable engineering assets.
 
-> **Don't let a successful AI coding session disappear when the session ends. Record it, learn from it, and make it reusable.**
+> **Don't let a successful AI coding session disappear when the session ends. Record it, understand the project, and make the knowledge reusable.**
 
 ## 🔗 Links
 
 - Repository: https://github.com/mhhyoucom2236/j-workflow
 - [J-Workflow Skill](skills/j-workflow/SKILL.md)
+- [Init Skill](skills/j-workflow/init/SKILL.md)
 - [Recorder Skill](skills/j-workflow/recorder/SKILL.md)
 - [Stop Skill](skills/j-workflow/stop/SKILL.md)
-- [中文文档 / Chinese Documentation](README.zh-CN.md)
+- [Chinese Documentation / 中文文档](README.zh-CN.md)
